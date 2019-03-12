@@ -30,8 +30,8 @@ import config_file as config
 class Classifier():
     def __init__(self, num_classes):
         self.num_classes = num_classes
-        self.denseNet_1 = layers.Dense(256, activation=nn.sigmoid)
-        self.denseNet_2 = layers.Dense(self.num_classes, activation=nn.sigmoid)
+        self.denseNet_1 = layers.Dense(256, activation=nn.sigmoid, name="classifier_dense_kayer_1")
+        self.denseNet_2 = layers.Dense(self.num_classes, activation=nn.sigmoid, name="classifier_dense_kayer_1")
         self.softmax_layer = nn.softmax
         return
     
@@ -56,12 +56,12 @@ class Classifier():
 #############################
 class LowLevelFeatureExtractor():
     def __init__(self):
-        self.conv_1 = layers.Conv2D(filters=64, kernel_size=[3,3], strides=[2,2], padding='same', activation=nn.sigmoid)
-        self.conv_2 = layers.Conv2D(filters=128, kernel_size=[3,3], strides=[1,1], padding='same', activation=nn.sigmoid)
-        self.conv_3 = layers.Conv2D(filters=128, kernel_size=[3,3], strides=[2,2], padding='same', activation=nn.sigmoid)
-        self.conv_4 = layers.Conv2D(filters=256, kernel_size=[3,3], strides=[1,1], padding='same', activation=nn.sigmoid)
-        self.conv_5 = layers.Conv2D(filters=256, kernel_size=[3,3], strides=[2,2], padding='same', activation=nn.sigmoid)
-        self.conv_6 = layers.Conv2D(filters=512, kernel_size=[3,3], strides=[1,1], padding='same', activation=nn.sigmoid)
+        self.conv_1 = layers.Conv2D(filters=64, kernel_size=[3,3], strides=[2,2], padding='same', activation=nn.sigmoid, name="lln_conv_1")
+        self.conv_2 = layers.Conv2D(filters=128, kernel_size=[3,3], strides=[1,1], padding='same', activation=nn.sigmoid, name="lln_conv_2")
+        self.conv_3 = layers.Conv2D(filters=128, kernel_size=[3,3], strides=[2,2], padding='same', activation=nn.sigmoid, name="lln_conv_3")
+        self.conv_4 = layers.Conv2D(filters=256, kernel_size=[3,3], strides=[1,1], padding='same', activation=nn.sigmoid, name="lln_conv_4")
+        self.conv_5 = layers.Conv2D(filters=256, kernel_size=[3,3], strides=[2,2], padding='same', activation=nn.sigmoid, name="lln_conv_5")
+        self.conv_6 = layers.Conv2D(filters=512, kernel_size=[3,3], strides=[1,1], padding='same', activation=nn.sigmoid, name="lln_conv_6")
         
         return
     def forward(self, inputs):
@@ -91,8 +91,8 @@ class LowLevelFeatureExtractor():
 ##############################
 class MidLevelFeaturesExtractor():
     def __init__(self):
-        self.conv_1 = layers.Conv2D(filters=512, kernel_size=[3,3], strides=[1,1], padding='same', activation=nn.sigmoid)
-        self.conv_2 = layers.Conv2D(filters=256, kernel_size=[3,3], strides=[1,1], padding='same', activation=nn.sigmoid)
+        self.conv_1 = layers.Conv2D(filters=512, kernel_size=[3,3], strides=[1,1], padding='same', activation=nn.sigmoid, name="mln_conv_1")
+        self.conv_2 = layers.Conv2D(filters=256, kernel_size=[3,3], strides=[1,1], padding='same', activation=nn.sigmoid, name="mln_conv_2")
         
         return
     
@@ -116,16 +116,16 @@ class MidLevelFeaturesExtractor():
 ##########################
 class GlobalFeaturesExtractor():
     def __init__(self):
-        self.conv_1 = layers.Conv2D(filters=512, kernel_size=[3,3], strides=[2,2], padding='same', activation=nn.sigmoid)
-        self.conv_2 = layers.Conv2D(filters=512, kernel_size=[3,3], strides=[1,1], padding='same', activation=nn.sigmoid)
-        self.conv_3 = layers.Conv2D(filters=512, kernel_size=[3,3], strides=[2,2], padding='same', activation=nn.sigmoid)
-        self.conv_4 = layers.Conv2D(filters=512, kernel_size=[3,3], strides=[1,1], padding='same', activation=nn.sigmoid)
+        self.conv_1 = layers.Conv2D(filters=512, kernel_size=[3,3], strides=[2,2], padding='same', activation=nn.sigmoid, name="gfn_conv_1")
+        self.conv_2 = layers.Conv2D(filters=512, kernel_size=[3,3], strides=[1,1], padding='same', activation=nn.sigmoid, name="gfn_conv_2")
+        self.conv_3 = layers.Conv2D(filters=512, kernel_size=[3,3], strides=[2,2], padding='same', activation=nn.sigmoid, name="gfn_conv_3")
+        self.conv_4 = layers.Conv2D(filters=512, kernel_size=[3,3], strides=[1,1], padding='same', activation=nn.sigmoid, name="gfn_conv_4")
         
-        self.flatten = layers.Flatten()
+        self.flatten = layers.Flatten(name="flatten")
         
-        self.dense_5 = layers.Dense(1024, activation=nn.sigmoid)
-        self.dense_6 = layers.Dense(512, activation=nn.sigmoid)
-        self.dense_7 = layers.Dense(256, activation=nn.sigmoid)
+        self.dense_5 = layers.Dense(1024, activation=nn.sigmoid, name="gfn_dense_1")
+        self.dense_6 = layers.Dense(512, activation=nn.sigmoid, name="gfn_dense_1")
+        self.dense_7 = layers.Dense(256, activation=nn.sigmoid, name="gfn_desne_3")
         
         return        
         
@@ -181,15 +181,15 @@ def fuseLayers(ll_features, gl_features):
 ##########################
 class ColorizedImageExtractor():
     def __init__(self):
-        self.conv_1 = layers.Conv2D(filters=128, kernel_size=[3,3], strides=[1,1], padding='same', activation=nn.sigmoid)
+        self.conv_1 = layers.Conv2D(filters=128, kernel_size=[3,3], strides=[1,1], padding='same', activation=nn.sigmoid, name="colorize_conv_1")
         self.upsample_1 = tf.image.resize_images
         
-        self.conv_2 = layers.Conv2D(filters=64, kernel_size=[3,3], strides=[1,1], padding='same', activation=nn.sigmoid)
-        self.conv_3 = layers.Conv2D(filters=64, kernel_size=[3,3], strides=[1,1], padding='same', activation=nn.sigmoid)
+        self.conv_2 = layers.Conv2D(filters=64, kernel_size=[3,3], strides=[1,1], padding='same', activation=nn.sigmoid, name="colorize_conv_2")
+        self.conv_3 = layers.Conv2D(filters=64, kernel_size=[3,3], strides=[1,1], padding='same', activation=nn.sigmoid, name="colorize_conv_3")
         self.upsample_2 = tf.image.resize_images
         
-        self.conv_4 = layers.Conv2D(filters=256, kernel_size=[3,3], strides=[1,1], padding='same', activation=nn.sigmoid)
-        self.conv_5 = layers.Conv2D(filters=2, kernel_size=[3,3], strides=[1,1], padding='same', activation=nn.sigmoid)
+        self.conv_4 = layers.Conv2D(filters=256, kernel_size=[3,3], strides=[1,1], padding='same', activation=nn.sigmoid, name="colorize_conv_4")
+        self.conv_5 = layers.Conv2D(filters=2, kernel_size=[3,3], strides=[1,1], padding='same', activation=nn.sigmoid, name="colorize_conv_5")
         self.upsample_3 = tf.image.resize_images
         
         return        
