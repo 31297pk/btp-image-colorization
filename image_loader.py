@@ -12,14 +12,35 @@ test_file_names = os.listdir(config.PATHNAME+config.TEST_DIR_NAME)
 
 # print(len(train_file_names))
 # print(len(test_file_names))
-np.save('train_file_names.npy', train_file_names)
-np.save('test_file_names.npy', test_file_names)
+save_file = True
+if save_file is True:
+    np.save('./numpy_files/train_file_names.npy', np.array(train_file_names))
+    np.save('./numpy_files/test_file_names.npy', np.array(test_file_names))
 
 def loadSingleImage(path):
 #     loads image in 'bgr' form and converts to 'rgb' and returns rgb variant
 #     print(path)
     img = cv2.imread(path)[:, :, ::-1]
     return img
+
+def get_image_from_path(path):
+    img = loadSingleImage(path)
+    assert img is not None, "PathNameWrong: Path specified is wrong!!!"
+    return {
+        'rgb_image':np.array(img),
+        'lab_image':np.array(LABConversion(img, img_format='rgb')),
+        'gray_image':np.array(grayConversion(img, img_format='rgb')),
+    }
+
+def get_image_from_index(index):
+    img_name = np.load('test_file_names.npy').tolist()[index]
+    img = loadSingleImage(config.PATHNAME + config.TEST_DIR_NAME + img_name)
+    assert img is not None, "PathNameWrong: Path specified is wrong!!!"
+    return {
+        'rgb_image':np.array(img),
+        'lab_image':np.array(LABConversion(img, img_format='rgb')),
+        'gray_image':np.array(grayConversion(img, img_format='rgb')),
+    }
 
 # Convert image to greyscale and returns it
 def grayConversion(image, img_format='bgr'):
@@ -111,7 +132,7 @@ class DataBatchGenerator():
     def get_train_data_batch(self, batch_size=None):        
         
         batch_size = self.batch_size if batch_size is None else batch_size
-        train_file_names = np.load('train_file_names.npy').tolist()
+        train_file_names = np.load('./numpy_files/train_file_names.npy').tolist()
         random_indices = np.random.randint(0, self.num_images_train, size=[batch_size])
         
         lab_batch = []
@@ -138,7 +159,7 @@ class DataBatchGenerator():
     def get_test_data_batch(self, batch_size=None):   
         
         batch_size = self.batch_size if batch_size is None else batch_size
-        test_file_names = np.load('test_file_names.npy').tolist()
+        test_file_names = np.load('./numpy_files/test_file_names.npy').tolist()
         random_indices = np.random.randint(0, self.num_images_test, size=[batch_size])
         
         lab_batch = []
@@ -160,3 +181,12 @@ class DataBatchGenerator():
             'gray_batch':np.array(gray_batch),
             'labels':np.array(labels_batch, dtype=np.uint8)
         }
+    
+    def get_image_from_path(self, path):
+        img = loadSingleImage(path)
+        return {
+            'rgb_image':np.array(img),
+            'lab_image':np.array(LABConversion(img, img_format='rgb')),
+            'gray_image':np.array(grayConversion(img, img_format='rgb')),
+        }
+    
